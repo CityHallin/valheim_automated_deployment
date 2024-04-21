@@ -108,4 +108,4 @@ jobs:
         uses: azure/cli@v2
         with:
           inlineScript: |
-          az network nsg rule delete -g "${{ vars.PROJECT }}-${{ vars.ENVIRONMENT }}" --nsg-name "${{ vars.PROJECT }}-${{ vars.ENVIRONMENT }}-nsg" -n "WinRM"
+            az network nsg rule delete -g "${{ vars.PROJECT }}-${{ vars.ENVIRONMENT }}" --nsg-name "${{ vars.PROJECT }}-${{ vars.ENVIRONMENT }}-nsg" -n "WinRM"
