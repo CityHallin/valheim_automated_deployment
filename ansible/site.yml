@@ -1,0 +1,45 @@
+
+---
+- hosts: all
+  become_method: runas
+  vars:
+    ansible_connection: winrm
+    ansible_port: 5986
+    ansible_winrm_transport: ntlm
+    ansible_winrm_server_cert_validation: ignore
+    mod: null
+    server_name: null
+    server_password: null
+
+  tasks:
+  #General OS Configs
+  - name: General OS Configs
+    import_tasks: ./modules/general.yml
+
+  #Folders
+  - name: Create Folders
+    import_tasks: ./modules/folders.yml
+  
+  #Install Tools
+  - name: Install Tools
+    import_tasks: ./modules/tools.yml
+
+  #Backup
+  - name: Backup Config
+    import_tasks: ./modules/backups.yml
+
+  #SteamCMD and Valheim Install
+  - name: SteamCMD and Valheim Install
+    import_tasks: ./modules/valheim.yml
+
+  #Download Valheim Plus Mod
+  - name: Install Valheim Mods
+    import_tasks: ./modules/mod.yml
+
+  #Pause
+  - name: Pause
+    import_tasks: ./modules/pause.yml
+  
+  # Local Firewall rules
+  - name: Firewall Configs
+    import_tasks: ./modules/firewall.yml         

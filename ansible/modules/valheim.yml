@@ -1,0 +1,48 @@
+
+---
+#SteamCMD
+- name: Download SteamCMD
+  win_get_url:
+    url: https://steamcdn-a.akamaihd.net/client/installer/steamcmd.zip
+    dest: C:\valheimserver
+
+- name: Unzip SteamCMD Archive
+  win_unzip:
+    src: C:\valheimserver\steamcmd.zip
+    dest: C:\valheimserver\steamcmd
+    delete_archive: yes    
+
+- name: Build Valheim Bat File
+  win_shell: |
+    $startValheimServerConfig = @"
+    @echo off
+    set SteamAppId=892970
+    echo "Starting server PRESS CTRL-C to exit"
+    C:\valheimserver\gamefiles\valheim_server.exe -logFile "c:\valheimserver\gamefiles\logs\valheim.log" -nographics -batchmode -name "{{ server_name }}" -port 2456 -world "{{ server_name }}" -password "{{ server_password }}" -savedir "c:\valheimserver\gamefiles\world" -public 1
+    "@
+    New-Item -Path 'c:\valheimserver\gamefiles\start_valheim_server.bat' -ItemType File -Force
+    Add-Content -Path 'c:\valheimserver\gamefiles\start_valheim_server.bat' -Value $startValheimServerConfig
+
+#Valheim install
+#Block error code 2 as its false positive
+- block:
+  - name: Install Valheim via SteamCMD
+    win_shell: 'cmd.exe /c c:\valheimserver\steamcmd\steamcmd.exe +force_install_dir C:\valheimserver\gamefiles +login anonymous +app_update 896660 validate +quit'
+    args: 
+      chdir: 'C:\valheimserver\steamcmd'
+      executable: powershell
+  ignore_errors: yes
+
+#Scheduled task
+- name: Create Valheim Scheduled Task
+  win_scheduled_task:
+    name: Valheim_Start
+    description: 'Starts Valheim Service'
+    actions:
+    - path: 'C:\valheimserver\gamefiles\start_valheim_server.bat'
+    triggers:
+    - type: boot
+      delay: PT1M          
+    username: LOCAL SERVICE
+    run_level: highest
+    state: present

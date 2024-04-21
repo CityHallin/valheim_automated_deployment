@@ -1,0 +1,31 @@
+
+---
+#Download Valheim Plus Mod
+- name: Download Valheim Plus Mod
+  win_get_url:
+    url: https://github.com/CityHallin/valheim/raw/main/server_mods/ValheimPlus_WindowsServer_2323-0-9-9-15.zip
+    dest: C:\valheimserver
+  when: mod == "yes"
+
+#Unzip Valheim Plus Mod
+- name: Unzip Valheim Plus Mod Archive
+  win_unzip:
+    src: C:\valheimserver\ValheimPlus_WindowsServer_2323-0-9-9-15.zip
+    dest: C:\valheimserver\gamefiles
+    delete_archive: yes
+  when: mod == "yes"
+
+#Download Valheim Plus Config
+- name: Download Valheim Plus Config
+  win_get_url:
+    url: https://github.com/CityHallin/valheim/raw/main/server_mods/valheim_plus_cfg.zip
+    dest: C:\valheimserver
+  when: mod == "yes"
+
+#Unzip Valheim Plus Config
+- name: Unzip Valheim Plus Config
+  win_unzip:
+    src: C:\valheimserver\valheim_plus_cfg.zip
+    dest: C:\valheimserver\gamefiles\BepInEx\config
+    delete_archive: yes
+  when: mod == "yes"

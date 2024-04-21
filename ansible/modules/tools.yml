@@ -1,0 +1,7 @@
+
+---  
+#CMtrace
+- name: Download Cmtrace 
+  win_get_url:
+    url: https://github.com/CityHallin/valheim/raw/main/tools/CMTrace.exe
+    dest: C:\users\public\desktop

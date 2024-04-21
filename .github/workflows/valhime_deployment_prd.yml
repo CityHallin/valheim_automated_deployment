@@ -1,0 +1,105 @@
+name: "Deploy PRD Valheim Server"
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - '*release*'
+
+jobs:
+  deployment:
+    name: "Deployment"
+    environment: prd
+    env:
+      ARM_CLIENT_ID: ${{ secrets.ENTRA_CLIENT_ID }}
+      ARM_CLIENT_SECRET: ${{ secrets.ENTRA_CLIENT_SECRET }}
+      ARM_SUBSCRIPTION_ID: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+      ARM_TENANT_ID: ${{ secrets.ENTRA_TENANT_ID }}
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        shell: bash
+
+    steps:
+      - name: "Checkout Repo"
+        uses: actions/checkout@v2
+
+      - name: "Get Runner IP"
+        id: runner_ip
+        uses: haythem/public-ip@v1.3
+
+      - name: "Install Terraform"
+        uses: hashicorp/setup-terraform@v2
+        with:
+          terraform_version: latest
+          terraform_wrapper: false
+
+      - name: "Terraform Init"
+        id: init
+        run: |
+          cd ./terraform
+          terraform init \
+            -input=false \
+            -backend-config="resource_group_name=${{ secrets.TERRAFORM_SA_RG_NAME }}" \
+            -backend-config="storage_account_name=${{ secrets.TERRAFORM_SA_NAME }}" \
+            -backend-config="container_name=${{ secrets.TERRAFORM_SA_CONTAINER_NAME }}" \
+            -backend-config="key=${{ vars.PROJECT }}-${{ vars.ENVIRONMENT }}.tfstate"
+
+      - name: "Terraform Validate"
+        id: validate
+        run: |
+          cd ./terraform
+          terraform validate -no-color
+
+      - name: "Terraform Plan"
+        id: plan
+        run: |
+          cd ./terraform
+          terraform plan \
+            -out=tfplan \
+            -input=false \
+            -var="dns_namespace=${{ vars.DNS_NAMESPACE }}" \
+            -var="environment=${{ vars.ENVIRONMENT }}" \
+            -var="mod=${{ vars.MOD }}" \
+            -var="project=${{ vars.PROJECT }}" \
+            -var="region=${{ vars.REGION }}" \
+            -var="remote_ip_address=${{ secrets.REMOTE_IP_ADDRESS }}" \
+            -var="runner_ip_address=${{ steps.runner_ip.outputs.ipv4 }}" \
+            -var="vm_restart_automation=${{ vars.VM_RESTART_AUTOMATION }}" \
+            -var="vm_size=${{ vars.VM_SIZE }}" \
+            -var="vm_startup_automation=${{ vars.VM_STARTUP_AUTOMATION }}" \
+            -var="vm_stop_automation=${{ vars.VM_STOP_AUTOMATION }}" \
+            -var="vm_username=${{ secrets.VM_USERNAME }}" \
+            -var="vm_password=${{ secrets.VM_PASSWORD }}"
+          
+      - name: "Terraform Apply"
+        id: apply
+        run: |
+          cd ./terraform
+          terraform apply -input=false tfplan
+
+      - name: "Terraform Outputs"
+        id: output
+        run: |
+          cd ./terraform
+          echo "IP=$(terraform output pip_ip_address)" >> $GITHUB_ENV
+
+      - name: Sleep for 60 seconds
+        uses: jakejarvis/wait-action@master
+        with:
+          time: '60s'
+
+      - name: "Set up Python 3 for Ansible"
+        uses: actions/setup-python@v1
+        with:
+          python-version: 3.8
+
+      - name: "Install Ansible and Dependencies"
+        run: |
+          pip install --upgrade pip
+          pip install ansible requests
+          pip install pywinrm
+
+      - name: "Run Ansible Playbook"
+        run: |
+          ansible-playbook -i ${{ env.IP }}, ./ansible/site.yml -e "ansible_password=${{ secrets.VM_PASSWORD }} ansible_user=${{ secrets.VM_USERNAME }} server_name=${{ vars.PROJECT }} server_password=${{ secrets.VALHEIM_PASSWORD }} mod=${{ vars.MOD }}"

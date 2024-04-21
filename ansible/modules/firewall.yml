@@ -1,0 +1,42 @@
+
+---  
+# Local Firewall rules
+- name: Firewall Rule Allow Steam TCP Port
+  win_firewall_rule:
+    name: Steam_TCP
+    localport: 27015
+    action: allow
+    direction: in
+    protocol: tcp      
+    state: present
+    enabled: yes
+
+- name: Firewall Rule Allow Steam UDP Port
+  win_firewall_rule:
+    name: Steam_UDP
+    localport: 27015
+    action: allow
+    direction: in
+    protocol: udp      
+    state: present
+    enabled: yes
+
+- name: Firewall Rule Allow Valheim TCP Port
+  win_firewall_rule:
+    name: Valheim_TCP
+    localport: 2456-2457
+    action: allow
+    direction: in
+    protocol: tcp      
+    state: present
+    enabled: yes
+
+- name: Firewall Rule Allow Valheim UDP Port
+  win_firewall_rule:
+    name: Valheim_UDP
+    localport: 2456-2457
+    action: allow
+    direction: in
+    protocol: udp      
+    state: present
+    enabled: yes

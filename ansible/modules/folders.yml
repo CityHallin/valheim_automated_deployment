@@ -1,0 +1,39 @@
+
+---
+#Folders
+- name: Create Gamefiles Folder
+  win_file:
+    path: C:\valheimserver\gamefiles
+    state: directory
+
+- name: Create Backup Folder
+  win_file:
+    path: C:\valheimbackups
+    state: directory
+
+- name: Create Scripts Folder
+  win_file:
+    path: C:\valheimserver\scripts
+    state: directory
+
+- name: Create Logs Folder
+  win_file:
+    path: C:\valheimserver\gamefiles\logs
+    state: directory
+
+- name: Create World Folder
+  win_file:
+    path: C:\valheimserver\gamefiles\world
+    state: directory
+
+- name: Create SteamCMD Folder
+  win_file:
+    path: C:\valheimserver\steamcmd
+    state: directory
+
+- name: Add LOCAL SERVICE Account Gamefiles Folder Access
+  win_acl:
+    user: NT AUTHORITY\LOCAL SERVICE
+    path: C:\valheimserver
+    type: allow
+    rights: Modify

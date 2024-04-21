@@ -1,0 +1,22 @@
+
+---
+#Backups
+- name: Download Backup Script
+  win_get_url:
+    url: https://github.com/CityHallin/valheim/raw/main/azure/runbooks/backup.ps1
+    dest: C:\valheimserver\scripts\backup.ps1
+
+#Scheduled task
+- name: Create Valheim Backup Scheduled Task
+  win_scheduled_task:
+    name: Valheim_Backup
+    description: 'Starts Valheim Backup Process'
+    actions:
+    - path: powershell.exe
+      arguments: '-File C:\valheimserver\scripts\backup.ps1'
+    triggers:
+    - type: daily 
+      start_boundary: '2024-04-09T15:00:00'         
+    username: SYSTEM
+    run_level: highest
+    state: present

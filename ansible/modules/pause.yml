@@ -1,0 +1,12 @@
+
+---
+#Start Valheim Task
+- name: Start Valheim Task
+  win_shell: |
+    Start-sleep 10
+    Start-ScheduledTask -TaskName Valheim_Start      
+
+#Pause allowing game to generate world once started
+- name: Pause to Generate World
+  pause:
+    minutes: 3

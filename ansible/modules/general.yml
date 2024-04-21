@@ -1,0 +1,14 @@
+
+---
+#Install Azure PowerShell modules for backup ability
+- name: Install Azure PowerShell Modules
+  win_shell: |
+    Install-PackageProvider -Name NuGet -Force -Confirm:$false
+    Install-Module Az.Accounts -Force -Confirm:$false
+    Install-Module Az.Storage -Force -Confirm:$false
+    Install-Module Az.Resources -Force -Confirm:$false
+
+#Timezone
+- name: Time Zone
+  win_timezone:
+    timezone: Mountain Standard Time
