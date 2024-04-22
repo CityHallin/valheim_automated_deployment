@@ -8,8 +8,9 @@
     ansible_winrm_transport: ntlm
     ansible_winrm_server_cert_validation: ignore
     mod: null
+    public_testing: null
     server_name: null
-    server_password: null
+    server_password: null    
 
   tasks:
   #General OS Configs
