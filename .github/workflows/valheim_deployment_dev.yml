@@ -103,3 +103,14 @@ jobs:
       - name: "Run Ansible Playbook"
         run: |
           ansible-playbook -i ${{ env.IP }}, ./ansible/site.yml -e "ansible_password=${{ secrets.VM_PASSWORD }} ansible_user=${{ secrets.VM_USERNAME }} server_name=${{ vars.PROJECT }} server_password=${{ secrets.VALHEIM_PASSWORD }} mod=${{ vars.MOD }}"
+
+      - name: Azure login
+        uses: azure/login@v2
+        with:
+          creds: ${{ secrets.AZURE_CREDENTIALS }}
+      
+      - name: Remove GitHub Runner from NSG
+        uses: azure/cli@v2
+        with:
+          inlineScript: |
+            az network nsg rule delete -g "${{ vars.PROJECT }}-${{ vars.ENVIRONMENT }}" --nsg-name "${{ vars.PROJECT }}-${{ vars.ENVIRONMENT }}-nsg" -n "WinRM"
