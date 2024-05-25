@@ -9,10 +9,12 @@ on:
 permissions:
       id-token: write
       contents: read
-      pull-requests: write
       
 jobs: 
-  deployment:
+  deployment:    
+    defaults:
+      run:
+        working-directory: terraform
     name: "Deployment"
     environment: dev
     env:
@@ -20,9 +22,6 @@ jobs:
       ARM_SUBSCRIPTION_ID: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
       ARM_TENANT_ID: ${{ secrets.ENTRA_TENANT_ID }}
     runs-on: ubuntu-latest
-    defaults:
-      run:
-        shell: bash
 
     steps:
       - name: "Checkout Repo"
@@ -41,39 +40,36 @@ jobs:
       - name: "Terraform Init"
         id: init
         run: |
-          cd ./terraform
           terraform init \
             -input=false \
             -backend-config="resource_group_name=${{ secrets.TERRAFORM_SA_RG_NAME }}" \
             -backend-config="storage_account_name=${{ secrets.TERRAFORM_SA_NAME }}" \
             -backend-config="container_name=${{ secrets.TERRAFORM_SA_CONTAINER_NAME }}"
 
-      # - name: "Terraform Validate"
-      #   id: validate
-      #   run: |
-      #     cd ./terraform
-      #     terraform validate -no-color
+      - name: "Terraform Validate"
+        id: validate
+        run: |
+          terraform validate -no-color
 
-      # - name: "Terraform Plan"
-      #   id: plan
-      #   run: |
-      #     cd ./terraform
-      #     terraform plan \
-      #       -out=tfplan \
-      #       -input=false \
-      #       -var="dns_namespace=${{ vars.DNS_NAMESPACE }}" \
-      #       -var="environment=${{ vars.ENVIRONMENT }}" \
-      #       -var="mod=${{ vars.MOD }}" \
-      #       -var="project=${{ vars.PROJECT }}" \
-      #       -var="region=${{ vars.REGION }}" \
-      #       -var="remote_ip_address=${{ secrets.REMOTE_IP_ADDRESS }}" \
-      #       -var="runner_ip_address=${{ steps.runner_ip.outputs.ipv4 }}" \
-      #       -var="vm_restart_automation=${{ vars.VM_RESTART_AUTOMATION }}" \
-      #       -var="vm_size=${{ vars.VM_SIZE }}" \
-      #       -var="vm_startup_automation=${{ vars.VM_STARTUP_AUTOMATION }}" \
-      #       -var="vm_stop_automation=${{ vars.VM_STOP_AUTOMATION }}" \
-      #       -var="vm_username=${{ secrets.VM_USERNAME }}" \
-      #       -var="vm_password=${{ secrets.VM_PASSWORD }}"
+      - name: "Terraform Plan"
+        id: plan
+        run: |
+          terraform plan \
+            -out=tfplan \
+            -input=false \
+            -var="dns_namespace=${{ vars.DNS_NAMESPACE }}" \
+            -var="environment=${{ vars.ENVIRONMENT }}" \
+            -var="mod=${{ vars.MOD }}" \
+            -var="project=${{ vars.PROJECT }}" \
+            -var="region=${{ vars.REGION }}" \
+            -var="remote_ip_address=${{ secrets.REMOTE_IP_ADDRESS }}" \
+            -var="runner_ip_address=${{ steps.runner_ip.outputs.ipv4 }}" \
+            -var="vm_restart_automation=${{ vars.VM_RESTART_AUTOMATION }}" \
+            -var="vm_size=${{ vars.VM_SIZE }}" \
+            -var="vm_startup_automation=${{ vars.VM_STARTUP_AUTOMATION }}" \
+            -var="vm_stop_automation=${{ vars.VM_STOP_AUTOMATION }}" \
+            -var="vm_username=${{ secrets.VM_USERNAME }}" \
+            -var="vm_password=${{ secrets.VM_PASSWORD }}"
           
       # - name: "Terraform Apply"
       #   id: apply
