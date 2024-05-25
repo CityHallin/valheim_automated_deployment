@@ -71,22 +71,20 @@ jobs:
             -var="vm_username=${{ secrets.VM_USERNAME }}" \
             -var="vm_password=${{ secrets.VM_PASSWORD }}"
           
-      # - name: "Terraform Apply"
-      #   id: apply
-      #   run: |
-      #     cd ./terraform
-      #     terraform apply -input=false tfplan
+      - name: "Terraform Apply"
+        id: apply
+        run: |
+          terraform apply -input=false tfplan
 
-      # - name: "Terraform Outputs"
-      #   id: output
-      #   run: |
-      #     cd ./terraform
-      #     echo "IP=$(terraform output pip_ip_address)" >> $GITHUB_ENV
+      - name: "Terraform Outputs"
+        id: output
+        run: |
+          echo "IP=$(terraform output pip_ip_address)" >> $GITHUB_ENV
 
-      # - name: Sleep for 60 seconds
-      #   uses: jakejarvis/wait-action@master
-      #   with:
-      #     time: '60s'
+      - name: Sleep for 60 seconds
+        uses: jakejarvis/wait-action@master
+        with:
+          time: '60s'
 
       # - name: "Set up Python 3 for Ansible"
       #   uses: actions/setup-python@v1
