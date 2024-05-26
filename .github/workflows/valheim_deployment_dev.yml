@@ -86,30 +86,30 @@ jobs:
         with:
           time: '60s'
 
-      # - name: "Set up Python 3 for Ansible"
-      #   uses: actions/setup-python@v1
-      #   with:
-      #     python-version: 3.8
+      - name: "Set up Python 3 for Ansible"
+        uses: actions/setup-python@v1
+        with:
+          python-version: 3.8
 
-      # - name: "Install Ansible and Dependencies"
-      #   run: |
-      #     pip install --upgrade pip
-      #     pip install ansible requests
-      #     pip install pywinrm
+      - name: "Install Ansible and Dependencies"
+        run: |
+          pip install --upgrade pip
+          pip install ansible requests
+          pip install pywinrm
 
-      # - name: "Run Ansible Playbook"
-      #   run: |
-      #     ansible-playbook -i ${{ env.IP }}, ./ansible/site.yml -e "ansible_password=${{ secrets.VM_PASSWORD }} ansible_user=${{ secrets.VM_USERNAME }} server_name=${{ vars.PROJECT }} server_password=${{ secrets.VALHEIM_PASSWORD }} mod=${{ vars.MOD }} public_testing=${{ vars.PUBLIC_TESTING }}"
+      - name: "Run Ansible Playbook"
+        run: |
+          ansible-playbook -i ${{ env.IP }}, ../ansible/site.yml -e "ansible_password=${{ secrets.VM_PASSWORD }} ansible_user=${{ secrets.VM_USERNAME }} server_name=${{ vars.PROJECT }} server_password=${{ secrets.VALHEIM_PASSWORD }} mod=${{ vars.MOD }} public_testing=${{ vars.PUBLIC_TESTING }}"
 
-      # - name: Azure login
-      #   uses: azure/login@v2
-      #   with:
-      #     client-id: ${{ secrets.ENTRA_CLIENT_ID }}
-      #     tenant-id: ${{ secrets.ENTRA_TENANT_ID }}
-      #     subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+      - name: Azure login
+        uses: azure/login@v2
+        with:
+          client-id: ${{ secrets.ENTRA_CLIENT_ID }}
+          tenant-id: ${{ secrets.ENTRA_TENANT_ID }}
+          subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
       
-      # - name: Remove GitHub Runner from NSG
-      #   uses: azure/cli@v2
-      #   with:
-      #     inlineScript: |
-      #       az network nsg rule delete -g "${{ vars.PROJECT }}-${{ vars.ENVIRONMENT }}" --nsg-name "${{ vars.PROJECT }}-${{ vars.ENVIRONMENT }}-nsg" -n "WinRM"
+      - name: Remove GitHub Runner from NSG
+        uses: azure/cli@v2
+        with:
+          inlineScript: |
+            az network nsg rule delete -g "${{ vars.PROJECT }}-${{ vars.ENVIRONMENT }}" --nsg-name "${{ vars.PROJECT }}-${{ vars.ENVIRONMENT }}-nsg" -n "WinRM"
