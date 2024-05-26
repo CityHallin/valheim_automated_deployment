@@ -99,7 +99,7 @@ jobs:
 
       - name: "Run Ansible Playbook"
         run: |
-          ansible-playbook -i ${{ env.IP }}, ./ansible/site.yml -e "ansible_password=${{ secrets.VM_PASSWORD }} ansible_user=${{ secrets.VM_USERNAME }} server_name=${{ vars.PROJECT }} server_password=${{ secrets.VALHEIM_PASSWORD }} mod=${{ vars.MOD }} public_testing=${{ vars.PUBLIC_TESTING }}"
+          ansible-playbook -i ${{ env.IP }}, ../ansible/site.yml -e "ansible_password=${{ secrets.VM_PASSWORD }} ansible_user=${{ secrets.VM_USERNAME }} server_name=${{ vars.PROJECT }} server_password=${{ secrets.VALHEIM_PASSWORD }} mod=${{ vars.MOD }} public_testing=${{ vars.PUBLIC_TESTING }}"
 
       - name: Azure login
         uses: azure/login@v2
