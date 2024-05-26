@@ -15,8 +15,12 @@
     - path: powershell.exe
       arguments: '-File C:\valheimserver\scripts\backup.ps1'
     triggers:
-    - type: daily 
-      start_boundary: '2024-04-09T21:00:00'         
+    - type: daily
+      start_boundary: '2024-05-25T12:00:00'
+    - type: daily
+      start_boundary: '2024-05-25T18:00:00'
+    - type: daily
+      start_boundary: '2024-05-25T00:00:00'
     username: SYSTEM
     run_level: highest
     state: present
